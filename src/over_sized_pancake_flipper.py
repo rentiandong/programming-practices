@@ -13,7 +13,7 @@
 # it will be solvable.
 
 
-def solved(arr):
+def __solved(arr):
     for i in arr:
         if not i:
             return False
@@ -24,7 +24,7 @@ def num_flips(arr, k):
     c = 0
     for i in range(0, len(arr)):
         if len(arr) - i < k:
-            if solved(arr):
+            if __solved(arr):
                 return c
             else:
                 return 'Unsolvable'
