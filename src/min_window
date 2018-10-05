@@ -1,8 +1,8 @@
 """
-from Leet Code
+from Leet Code, slightly modifed problem statement to a different problem version
 
-Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity
-O(n).
+Given a string S and a string T, find the minimum window in S which will contain all the unique characters in T in
+complexity O(n).
 
 Example:
 Input: S = "ADOBECODEBANC", T = "ABC"
