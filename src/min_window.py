@@ -28,9 +28,9 @@ def min_window(s, t):
     :rtype: str
     """
 
-    # edge case
-    if s[-1] == t:
-        return t
+    # edge case, target is empty string
+    if t == '':
+        return ''
 
     match = None
     contains = {i: 0 for i in t}
@@ -48,9 +48,6 @@ def min_window(s, t):
             while satisfied(contains):
                 if start == len(s) - 1:
                     break
-                # wait for left bound to catch up
-                # not just checking once
-                # change if to while satisfied(contains)
                 cur_match = s[start:i + 1]
                 if match is None:
                     match = cur_match
@@ -76,4 +73,8 @@ def min_window(s, t):
         elif len(cur_match) < len(match):
             match = cur_match
 
-    return match
+    # edge case of no match
+    if match is None:
+        return ''
+    else:
+        return match
