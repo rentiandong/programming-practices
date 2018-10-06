@@ -18,7 +18,7 @@ def verify_all_steps(parties, steps):
     for step in steps:
         if not verify_one_step(parties, step):
             return False
-    # check if everyone executed when done
+    # check if everyone evacuated
     for i in parties:
         if parties[i] > 0:
             return False

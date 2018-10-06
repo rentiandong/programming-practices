@@ -58,7 +58,7 @@ class EvacPlan:
     def __make_plan(self):
 
         if self.plan is not None:
-            return self.plan
+            return
         else:
             self.plan = []
 
