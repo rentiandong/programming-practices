@@ -13,65 +13,63 @@ plan? The senate is counting on you!
 from heapq import heapify, heappop, heappush
 
 
-class __Party:
-    def __init__(self, name, num):
-        self.name = name
-        self.num = num
+class EvacPlan:
 
-    def __le__(self, other):
-        return self.num < other.num
-
-
-def __majority(party, total):
-    return party.num() > total / 2
-
-
-def senate_evacuate(s):
     """
-    We will always sequentially remove 2 people from the largest senate, if this
-    leaves one party in majority, remove 1 each from the top 2 majority parties
+    If total number of people is odd, pop 1 from the largest party, make that
+    the first instruction (just evacuate 1 people in that round)
 
-    :param s: a dictionary of the form {'A': #senates, 'B': #senates, ...}
-    :return: a list of instructions that looks like ['AB', 'AB', 'AC', 'B', ...]
+    Then for the remaining even number of people We will always pop from the
+    current largest party. Then group instructions into pairs of two to minimize
+    rounds and avoid breaking in situations where only two parties left and their
+    numbers are equal.
     """
 
-    parties = [__Party(i, s[i]) for i in s]
-    total = sum([s[i] for i in s])
-    heapify(parties)
-    instructions = []
+    def __init__(self, s):
+        """
+        :param s: a dictionary of the form {'A': #senates, 'B': #senates, ...}
+        """
+        class __Party:  # simple object to represent a party
+            def __init__(self, name, num):
+                self.name = name
+                self.num = num
 
-    while total > 0:
+            def __lt__(self, other):
+                return self.num > other.num  # reverse to turn min heap to max heap
 
-        # edge case of {'A': 1, 'B': 1, 'C': 1} we are forced to evacuate just 1 at this round
-        if len(parties) == 3 and total == 3:
-            p = heappop(parties)
-            total -= 1
-            instructions.append(p.name)
-            continue
+        self.__parties = [__Party(i, s[i]) for i in s]
+        self.__total = sum([s[i] for i in s])
+        heapify(self.__parties)
+        self.plan = None
+        self.__group = ''
+        self.__make_plan()
 
-        # get top 2 largest parties
-        # there should not be 1 party left at any time as
-        # that makes them absolutely majority
-        top_1 = heappop(parties)
-        top_2 = heappop(parties)
+    def __evac_largest(self):
+        largest_party = heappop(self.__parties)
+        largest_party.num -= 1
+        self.__total -= 1
+        self.__group += largest_party.name
+        if len(self.__group) == 2:
+            self.plan.append(self.__group)
+            self.__group = ''
+        if largest_party.num > 0:
+            heappush(self.__parties, largest_party)
 
-        # evacuate 1 from largest party
-        step = top_1.name
-        total -= 1
+    def __make_plan(self):
 
-        # if that makes second largest majority, or largest has nothing left
-        if __majority(top_2, total) or top_1.num == 0:
-            top_2.evacuate()
-            step += top_2.name
+        if self.plan is not None:
+            return self.plan
         else:
-            top_1.evacuate()
-            step += top_1.name
-        total -= 1
+            self.plan = []
 
-        instructions.append(step)
+        # make total people even
+        if self.__total % 2 == 1:
+            self.__evac_largest()
+            self.plan.append(self.__group)
+            self.__group = ''
 
-        # put the parties back
-        heappush(parties, top_1)
-        heappush(parties, top_2)
+        while self.__total > 0:
+            self.__evac_largest()
 
-    return instructions
+        if len(self.__group) == 1:
+            self.plan.append(self.__group)
