@@ -3,7 +3,7 @@ from min_window import min_window
 from random import Random
 
 
-class TestStringMethods(unittest.TestCase):
+class TestMinWindow(unittest.TestCase):
 
     def test_empty_source(self):
         self.assertEqual('', min_window('', 'a'))

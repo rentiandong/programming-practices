@@ -25,7 +25,7 @@ def verify_all_steps(parties, steps):
     return True
 
 
-class TestStringMethods(unittest.TestCase):
+class TestSenateEvacuation(unittest.TestCase):
 
     def test_empty(self):
         self.assertEqual([], EvacPlan({}).plan)
