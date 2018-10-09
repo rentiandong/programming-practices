@@ -19,16 +19,16 @@ from queue import Queue
 
 class Stall:
     def __init__(self, ls, rs, n):
-        self.__ls = ls
-        self.__rs = rs
+        self.ls = ls
+        self.rs = rs
         self.__n = n
 
     def __lt__(self, other):
-        if min(self.__ls, self.__rs) != min(other.__ls, other.__rs):
-            return min(self.__ls, self.__rs) < min(other.__ls, other.__rs)
+        if min(self.ls, self.rs) != min(other.ls, other.rs):
+            return min(self.ls, self.rs) < min(other.ls, other.rs)
         else:
-            if max(self.__ls, self.__rs) != max(other.__ls, other.__rs):
-                return max(self.__ls, self.__rs) > max(other.__ls, other.__rs)
+            if max(self.ls, self.rs) != max(other.ls, other.rs):
+                return max(self.ls, self.rs) > max(other.ls, other.rs)
             else:
                 return self.__n > other.__n
 
@@ -40,16 +40,14 @@ def calc_space(n, k):
     :return: max(Ls, Rs) and min(Ls, Rs) when everybody entered
     """
 
-    # edge case of k == n:
-    if k >= n:
-        return 0, 0
-
-    if n <= 2:
+    # edge cases of k == n:
+    if k >= n or n <= 2 or k == 0:
         return 0, 0
 
     # let range of stalls be (a, b) where a and b are emtpy
     queue = Queue()
-    queue.put((1, n - 2))
+    queue.put((0, n - 1))
+    last_stall = Stall(0, 0, -1)
 
     for i in range(0, k):
 
@@ -57,6 +55,7 @@ def calc_space(n, k):
         start, end = queue.get()
         if (start + end) % 2 == 0:
             loc = (start + end) / 2
+            last_stall = Stall(loc - start, end - loc, loc)
         else:
             loc_1 = (start + end) // 2
             loc_2 = loc_1 + 1
@@ -67,27 +66,25 @@ def calc_space(n, k):
             # unique
             if stall_1 > stall_2:
                 loc = loc_1
+                last_stall = stall_1
             else:
                 loc = loc_2
+                last_stall = stall_2
 
         # update empty sequence of stalls
-        if loc - 1 >= start:
-            queue.put((start, loc - 1))
-        if end >= loc + 1:
-            queue.put((loc + 1, end))
+        left = start, loc - 1
+        right = loc + 1, end
+        left_size = loc - 1 - start
+        right_size = end - loc - 1
+        if right_size > left_size:
+            if right_size >= 0 and queue.qsize() < k - i:
+                queue.put(right)
+            if left_size >= 0 and queue.qsize() < k - i:
+                queue.put(left)
+        else:
+            if left_size >= 0 and queue.qsize() < k - i:
+                queue.put(left)
+            if right_size >= 0 and queue.qsize() < k - i:
+                queue.put(right)
 
-    # after everybody gets in their stalls, look through all
-    # empty spaces stored in queue and find desired spacing sizes
-    largest = 0
-    smallest = n
-    while not queue.empty():
-        start, end = queue.get()
-        loc = (start + end) / 2  # odd / even does not matter here
-        larger = max(loc - start, end - loc)
-        smaller = min(loc - start, end - loc)
-        if larger > largest:
-            largest = larger
-        if smaller < smallest:
-            smallest = smaller
-
-    return largest, smallest
+    return max(last_stall.ls, last_stall.rs), min(last_stall.ls, last_stall.rs)
