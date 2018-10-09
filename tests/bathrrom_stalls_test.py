@@ -19,8 +19,8 @@ class TestBathroomStalls(unittest.TestCase):
     def test_medium_0(self):
         self.assertEqual(calc_space(1000, 1), (500, 499))
 
-    #def test_large_0(self):
-    #    calc_space(650701937524199729, 556692397629582053)
+    def test_large_0(self):
+        self.assertIsNotNone(calc_space(650701937524199729, 556692397629582053))
 
 
 if __name__ == '__main__':
