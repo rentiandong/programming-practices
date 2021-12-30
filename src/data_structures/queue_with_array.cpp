@@ -1,5 +1,9 @@
+// using test cases from https://leetcode.com/problems/implement-queue-using-stacks/
+
 #include <cstddef>
+#include <iostream>
 #include <vector>
+#include <string>
 
 class QueueWithArray {
 public:
@@ -44,3 +48,7 @@ private:
     std::size_t start_;
     std::size_t end_;
 };
+
+int main()  { 
+    return 0; 
+}
